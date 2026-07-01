@@ -14,7 +14,17 @@ import cartRouter from './routes/cartRoute.js';
 const app = express(); 
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: [
+    "http://localhost:5173",
+    "http://localhost:5174",
+    "https://wrist-watch-orcin.vercel.app",
+    "https://wrist-watch-7pty.vercel.app/"
+  ],
+  credentials: true, 
+}))
+
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -31,7 +41,7 @@ app.use(express.urlencoded({ extended: true }));
 
 
 app.get('/', (req, res) => {
-    res.send('Hello World!');
+    res.send('Server is running!');
 });
 
 app.listen(PORT, () =>{
