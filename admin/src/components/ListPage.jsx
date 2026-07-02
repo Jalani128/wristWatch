@@ -10,8 +10,8 @@ const ListPage = () => {
     const [watches, setWatches] = useState([]);
     const [loading, setLoading] = useState(true);
     const [deletingId, setDeletingId] = useState(null);
-
-    const API_BASE = "http://localhost:4000";
+    
+    const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:4000";
     const LIST_PATH = "/api/watches";
 
     // map all these to ui that is coming form the server

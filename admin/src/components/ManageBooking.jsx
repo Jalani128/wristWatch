@@ -5,6 +5,7 @@ import { Calendar, ChevronDown, CreditCard, MapPin, MessageSquare, Phone, Search
 
 
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:4000";
+
 const axiosInstance = axios.create({ baseURL: API_BASE });
 axiosInstance.interceptors.request.use((cfg) => {
     const token = localStorage.getItem("authtoken");
