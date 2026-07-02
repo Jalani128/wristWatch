@@ -27,7 +27,7 @@ export default function OrdersPage() {
     setLoading(true);
     setError(null);
     try {
-      const res = await axiosInstance.get("/orders/my");
+        const res = await axiosInstance.get("/api/orders/my");
       const payload = res?.data;
       const list = Array.isArray(payload?.orders)
         ? payload.orders
@@ -103,7 +103,7 @@ export default function OrdersPage() {
       )
     );
     try {
-      await axiosInstance.put(`/orders/${id}`, { orderStatus: "Cancelled" });
+await axiosInstance.put(`/api/orders/${id}`, { orderStatus: "Cancelled" });
     } catch (err) {
       console.error("Cancel order failed", err);
       setOrders(prev);
