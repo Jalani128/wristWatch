@@ -3,7 +3,7 @@ import axios from "axios";
 import { ShoppingBag, Calendar, Package, Eye, EyeOff } from "lucide-react";
 import { ordersPageStyles } from "../assets/dummyStyles";
 
-const API_BASE = "http://localhost:4000/api";
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState([]);
