@@ -13,7 +13,6 @@ import cartRouter from './routes/cartRoute.js';
 
 const app = express(); 
 
-// Middleware
 app.use(cors({
   origin: [
     "http://localhost:5173",

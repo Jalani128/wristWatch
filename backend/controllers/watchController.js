@@ -5,8 +5,7 @@ import path from "path";
 
 
 
-const API_BASE = 'http://localhost:4000/';
-
+const API_BASE = process.env.API_BASE_URL || 'http://localhost:4000/';
 // To create a watch
 
 export async function createWatch(req, res) {
