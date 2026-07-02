@@ -151,7 +151,7 @@ export const confirmPayment = async (req, res, next) =>{
             message: "Stripe is not configured"
         });
 
-        const session = await stripe.checkout.session.retrieve(session_id);
+        const session = await stripe.checkout.sessions.retrieve(session_id);
             if(!session) return res.status(400).json({
                 success: false,
                 message: "Invalid session"

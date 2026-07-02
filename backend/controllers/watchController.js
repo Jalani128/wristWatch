@@ -1,18 +1,22 @@
 import mongoose from "mongoose";
 import Watch from "../model/watchModel.js";
-import fs from "fs";
-import path from "path";
+import { put, del } from "@vercel/blob";
 
-
-
-const API_BASE = process.env.API_BASE_URL || 'http://localhost:4000/';
 // To create a watch
-
 export async function createWatch(req, res) {
     try {
         const { name, description, price, category, brandName } = req.body;
         let image = req.body.image;
-        if (req.file?.filename) image = `${API_BASE}uploads/${req.file.filename}`;
+
+        if (req.file) {
+            const blob = await put(
+                `watches/watch-${Date.now()}-${req.file.originalname}`,
+                req.file.buffer,
+                { access: "public" }
+            );
+            image = blob.url;
+        }
+
         if (!name || !description || !price || !image) {
             return res.status(400).json({
                 success: false,
@@ -46,12 +50,12 @@ export async function createWatch(req, res) {
     }
 }
 
-// To fetch the watche
+// To fetch the watches
 export async function getWatches(req, res) {
     try {
         const { category, sort = "createdAt", page = 1, limit = 12 } = req.query;
         const filter = {};
-        // TO filter
+
         if (typeof category === "string") {
             const cat = category.trim().toLowerCase();
             if (cat === "men" || cat === "women") filter.category = cat;
@@ -82,7 +86,8 @@ export async function getWatches(req, res) {
         });
     }
 }
-// to delete a watch and also remove the linked image the upload folder
+
+// to delete a watch and also remove the linked image from Vercel Blob
 export async function deleteWatch(req, res) {
     try {
         const { id } = req.params;
@@ -95,16 +100,15 @@ export async function deleteWatch(req, res) {
             success: false,
             message: "Watch not found",
         });
-        if (w.image && typeof w.image === "string") {
-            const normalized = w.image.startsWith("/") ? w.image.slice(1) : w.image;
-            if (normalized.startsWith("uploads/")) {
-                const filename = normalized.replace(/^uploads\//, "");
-                const filepath = path.join(process.cwd(), "uploads", filename);
-                fs.unlink(filepath, (err) => {
-                    if (err) console.warn("Failed to unlink image file", filepath, err?.message || err);
-                });
+
+        if (w.image && typeof w.image === "string" && w.image.includes("blob.vercel-storage.com")) {
+            try {
+                await del(w.image);
+            } catch (err) {
+                console.warn("Failed to delete blob image:", w.image, err?.message || err);
             }
         }
+
         await Watch.findByIdAndDelete(id);
         return res.status(200).json({
             success: true,
@@ -112,7 +116,7 @@ export async function deleteWatch(req, res) {
         });
     }
     catch (err) {
-        console.error("Error in Delete Watche controller:", err);
+        console.error("Error in Delete Watch controller:", err);
         return res.status(500).json({
             success: false,
             message: "Internal server error",
@@ -122,15 +126,15 @@ export async function deleteWatch(req, res) {
 }
 
 // to get watches by brand name
-    export async function getWatchesByBrand(req, res) {
-        try {
-            const brandName = req.params.brandName;
-            const items = await Watch.find({ brandName }).sort({ createdAt: -1 }).lean();
-            return res.status(200).json({
-                success: true,
-                message: "Watches fetched successfully",
-                data: items,
-            })
+export async function getWatchesByBrand(req, res) {
+    try {
+        const brandName = req.params.brandName;
+        const items = await Watch.find({ brandName }).sort({ createdAt: -1 }).lean();
+        return res.status(200).json({
+            success: true,
+            message: "Watches fetched successfully",
+            data: items,
+        })
     }
     catch (err) {
         console.error("Error in get Watches Brand Name controller:", err);
