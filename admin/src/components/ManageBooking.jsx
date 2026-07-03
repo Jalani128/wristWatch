@@ -30,7 +30,7 @@ const ManageBooking = () => {
         setLoading(true);
         setError(null);
         try {
-            const res = await axiosInstance.get("/orders");
+            const res = await axiosInstance.get("api/orders");
             const orders = Array.isArray(res?.data?.orders)
                 ? res.data.orders
                 : Array.isArray(res?.data)
@@ -82,7 +82,7 @@ const ManageBooking = () => {
     async function deleteBooking(id) {
         if (!window.confirm("Delete this booking?")) return;
         try {
-            await axiosInstance.delete(`/orders/${id}`);
+            await axiosInstance.delete(`api/orders/${id}`);
             setBookings((p) => p.filter((b) => b.id !== id));
         } catch (err) {
             alert(err?.response?.data?.message || "Failed to delete booking");
@@ -102,7 +102,7 @@ const ManageBooking = () => {
             p.map((b) => (b.id === id ? { ...b, status: newStatus } : b))
         );
         try {
-            await axiosInstance.put(`/orders/${id}`, { orderStatus: newStatus });
+            await axiosInstance.put(`api/orders/${id}`, { orderStatus: newStatus });
         } catch (err) {
             alert(err?.response?.data?.message || "Failed to update status");
             fetchOrders();
